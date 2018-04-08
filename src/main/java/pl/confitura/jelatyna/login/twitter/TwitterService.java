@@ -3,6 +3,7 @@ package pl.confitura.jelatyna.login.twitter;
 import static com.github.scribejava.core.model.Verb.GET;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -17,6 +18,7 @@ import pl.confitura.jelatyna.login.OAuthUserService;
 import pl.confitura.jelatyna.user.User;
 
 @Service
+@ConditionalOnProperty("twitter.apiKey")
 public class TwitterService {
     private ObjectMapper mapper;
     private OAuth10aService service;

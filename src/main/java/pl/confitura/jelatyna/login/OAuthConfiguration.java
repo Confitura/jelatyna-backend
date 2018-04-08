@@ -35,33 +35,42 @@ public class OAuthConfiguration {
         System.out.println();
     }
 
-    private AbstractOAuth20Service github() {
+    private AbstractOAuth20Service github(OAuthProviderProperties properties) {
         return new GithubService(
                 oauthUserService,
-                properties.oauth2.get(GithubService.SYSTEM),
+                properties,
                 mapper);
     }
 
-    private AbstractOAuth20Service facebook() {
+    private AbstractOAuth20Service facebook(OAuthProviderProperties properties) {
         return new FacebookService(
                 oauthUserService,
-                properties.oauth2.get(FacebookService.SYSTEM),
+                properties,
                 mapper);
     }
 
-    private AbstractOAuth20Service google() {
+    private AbstractOAuth20Service google(OAuthProviderProperties properties) {
         return new GoogleService(
                 oauthUserService,
-                properties.oauth2.get(GoogleService.SYSTEM),
+                properties,
                 mapper);
     }
 
     @Bean("OAuthServices")
-    public Map<String, AbstractOAuth20Service> services(){
+    public Map<String, AbstractOAuth20Service> services() {
+        OAuthProviderProperties githubProperties = this.properties.oauth2.get(GithubService.SYSTEM);
+        OAuthProviderProperties facebookProperties = this.properties.oauth2.get(FacebookService.SYSTEM);
+        OAuthProviderProperties googleProperties = this.properties.oauth2.get(GoogleService.SYSTEM);
         HashMap<String, AbstractOAuth20Service> map = new HashMap<>();
-        map.put(GithubService.SYSTEM, github());
-        map.put(FacebookService.SYSTEM, facebook());
-        map.put(GoogleService.SYSTEM, google());
+        if (githubProperties != null) {
+            map.put(GithubService.SYSTEM, github(githubProperties));
+        }
+        if (facebookProperties != null) {
+            map.put(FacebookService.SYSTEM, facebook(facebookProperties));
+        }
+        if (googleProperties != null) {
+            map.put(GoogleService.SYSTEM, google(googleProperties));
+        }
         return map;
     }
 
