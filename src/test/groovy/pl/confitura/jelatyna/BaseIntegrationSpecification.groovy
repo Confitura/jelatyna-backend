@@ -4,8 +4,8 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.ActiveProfiles
 import spock.lang.Specification
 
-@ActiveProfiles("fake-security,fake-db")
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@ActiveProfiles("fake-db")
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK)
 abstract class BaseIntegrationSpecification extends Specification {
 
 }

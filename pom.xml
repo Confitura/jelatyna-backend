@@ -68,6 +68,11 @@
             <scope>test</scope>
         </dependency>
         <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
             <groupId>com.github.scribejava</groupId>
             <artifactId>scribejava-httpclient-okhttp</artifactId>
             <version>${scribejava.version}</version>
@@ -121,30 +126,6 @@
             <artifactId>spring-boot-configuration-processor</artifactId>
             <optional>true</optional>
         </dependency>
-        <dependency>
-        <groupId>org.junit.jupiter</groupId>
-        <artifactId>junit-jupiter-api</artifactId>
-        <version>5.1.0</version>
-        <scope>test</scope>
-    </dependency>
-        <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter-engine</artifactId>
-            <version>5.1.0</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.junit.platform</groupId>
-            <artifactId>junit-platform-launcher</artifactId>
-            <version>1.1.0</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.junit.platform</groupId>
-            <artifactId>junit-platform-runner</artifactId>
-            <version>1.1.0</version>
-            <scope>test</scope>
-        </dependency>
 
         <dependency>
             <groupId>org.spockframework</groupId>
@@ -177,6 +158,12 @@
         <dependency>
             <groupId>io.rest-assured</groupId>
             <artifactId>rest-assured</artifactId>
+            <version>3.0.7</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.rest-assured</groupId>
+            <artifactId>spring-mock-mvc</artifactId>
             <version>3.0.7</version>
             <scope>test</scope>
         </dependency>
@@ -218,17 +205,18 @@
                     <source>1.8</source>
                     <target>1.8</target>
                 </configuration>
-            </plugin><plugin>
-            <artifactId>maven-surefire-plugin</artifactId>
-            <version>2.20.1</version>
-            <configuration>
-                <useFile>false</useFile>
-                <includes>
-                    <include>**/*Spec.java</include>
-                    <include>**/*Specification.java</include>
-                </includes>
-            </configuration>
-        </plugin>
+            </plugin>
+            <plugin>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>2.20.1</version>
+                <configuration>
+                    <useFile>false</useFile>
+                    <includes>
+                        <include>**/*Spec.java</include>
+                        <include>**/*Specification.java</include>
+                    </includes>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
 

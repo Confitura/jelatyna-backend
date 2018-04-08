@@ -8,12 +8,9 @@ class ApplicationIntegrationSpecification extends BaseIntegrationSpecification{
 
     @Autowired
     ApplicationContext context
-    @LocalServerPort
-    String port
 
     def "context loads"() {
         expect:
         context != null
-        port != null
     }
 }
