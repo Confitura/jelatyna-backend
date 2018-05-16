@@ -24,11 +24,6 @@ public class UserRepositoryTest {
     @Autowired
     private UserRepository repository;
 
-    @BeforeEach
-    public void cleanup() {
-        em.createQuery("DELETE FROM User").executeUpdate();
-    }
-
     @Test
     void should_save_a_user() {
         User user = new User()
