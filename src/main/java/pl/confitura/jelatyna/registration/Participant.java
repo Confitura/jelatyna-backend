@@ -9,7 +9,7 @@ import org.hibernate.annotations.GenericGenerator;
 
 import lombok.Data;
 import lombok.experimental.Accessors;
-import pl.confitura.jelatyna.registration.ticket.Ticket;
+import pl.confitura.jelatyna.registration.voucher.Voucher;
 
 @Entity
 @Data
@@ -22,8 +22,7 @@ public class Participant {
     private String id;
 
     @OneToOne
-    @NotNull
-    private Ticket ticket;
+    private Voucher voucher;
 
     private String name;
     private String email;
@@ -34,14 +33,12 @@ public class Participant {
     private String size;
     private String info;
     private String createdBy;
-    private String originalBuyer;
-    private LocalDateTime creationDate;
+
     private LocalDateTime registrationDate;
     private LocalDateTime arrivalDate;
     private String registeredBy;
     private LocalDateTime ticketSendDate;
     private LocalDateTime surveySendDate;
-    private boolean emailSent;
 
     public boolean alreadyArrived() {
         return this.arrivalDate != null;

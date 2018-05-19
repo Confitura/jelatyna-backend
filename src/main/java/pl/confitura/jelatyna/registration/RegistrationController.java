@@ -22,6 +22,10 @@ import lombok.extern.slf4j.Slf4j;
 import pl.confitura.jelatyna.infrastructure.security.JelatynaPrincipal;
 import pl.confitura.jelatyna.mail.MailSender;
 import pl.confitura.jelatyna.mail.MessageInfo;
+import pl.confitura.jelatyna.registration.voucher.Voucher;
+import pl.confitura.jelatyna.registration.voucher.VoucherService;
+import pl.confitura.jelatyna.user.User;
+import pl.confitura.jelatyna.user.UserRepository;
 
 @RepositoryRestController
 @Slf4j
@@ -29,7 +33,9 @@ import pl.confitura.jelatyna.mail.MessageInfo;
 public class RegistrationController {
 
     private MailSender sender;
+    private UserRepository userRepository;
     private ParticipantRepository repository;
+    private VoucherService voucherService;
     private TicketGenerator generator;
 
     @PostMapping("/participants/reminder")
@@ -37,7 +43,7 @@ public class RegistrationController {
     @Transactional
     public ResponseEntity<Object> reminder()
             throws IOException {
-        doSendRemindTo(repository.findAllUnregistered());
+        doSendRemindTo(voucherService.findUnusedVouchers());
         return ResponseEntity.accepted().build();
     }
 
@@ -45,7 +51,7 @@ public class RegistrationController {
     @PreAuthorize("@security.isAdmin()")
     @Transactional
     public ResponseEntity<Object> sendTickets() throws IOException {
-        doSendTicketTo(repository.findAllRegistered());
+        doSendTicketTo(userRepository.findUsersToSendTickets());
         return ResponseEntity.accepted().build();
     }
 
@@ -53,7 +59,7 @@ public class RegistrationController {
     @PreAuthorize("@security.isAdmin()")
     @Transactional
     public ResponseEntity<Object> sendSurveys() throws IOException {
-        doSendSurveyTo(repository.findAllRegistered());
+        doSendSurveyTo(userRepository.findAllRegistered());
         return ResponseEntity.accepted().build();
     }
 
@@ -98,7 +104,7 @@ public class RegistrationController {
 
 
     @Async
-    void doSendRemindTo(Iterable<Participant> participants) {
+    void doSendRemindTo(Iterable<Voucher> participants) {
         Streams.stream(participants)
                 .forEach(participant -> {
                     try {
@@ -113,55 +119,53 @@ public class RegistrationController {
     }
 
     @Async
-    void doSendTicketTo(Iterable<Participant> participants) {
-        Streams.stream(participants)
-                .filter(Participant::ticketNotSentYet)
-                .forEach(this::sendTicketTo);
+    void doSendTicketTo(Iterable<User> users) {
+        users.forEach(this::sendTicketTo);
     }
 
-    private void sendTicketTo(Participant participant) {
+    private void sendTicketTo(User user) {
         try {
-            doSendTicketTo(participant);
+            doSendTicketTo(user);
         } catch (Exception e) {
-            log.error("Error on sending ticket to {}", participant.getOriginalBuyer());
+            log.error("Error on sending ticket to {}", user.getEmail());
             log.error("Exception from sender:", e);
         }
     }
 
     @Transactional
-    void doSendTicketTo(Participant participant) throws IOException, MandrillApiError {
+    void doSendTicketTo(User user) throws IOException, MandrillApiError {
         MessageInfo info = new MessageInfo()
-                .setEmail(participant.getEmail())
-                .setName(participant.getName())
-                .setTicket(generator.generateFor(participant.getId()));
+                .setEmail(user.getEmail())
+                .setName(user.getName())
+                .setTicket(generator.generateFor(user.getId()));
         sender.send("registration-ticket", info);
-        repository.save(participant.setTicketSendDate(LocalDateTime.now()));
+        repository.save(user.getParticipant().setTicketSendDate(LocalDateTime.now()));
     }
 
     @Async
-    void doSendSurveyTo(Iterable<Participant> participants) {
-        Streams.stream(participants)
-                .filter(Participant::alreadyArrived)
-                .filter(Participant::surveyNotSentYet)
+    void doSendSurveyTo(Iterable<User> users) {
+        Streams.stream(users)
+                .filter(it -> it.getParticipant().alreadyArrived())
+                .filter(it -> it.getParticipant().surveyNotSentYet())
                 .forEach(this::sendSurveyTo);
     }
 
 
-    private void sendSurveyTo(Participant participant) {
+    private void sendSurveyTo(User user) {
         try {
-            doSendSurvey(participant);
+            doSendSurvey(user);
         } catch (Exception e) {
-            log.error("Error on sending survey to {}", participant.getOriginalBuyer());
+            log.error("Error on sending survey to {}", user.getEmail());
             log.error("Exception from sender:", e);
         }
     }
 
     @Transactional
-    void doSendSurvey(Participant participant) throws IOException, MandrillApiError {
+    void doSendSurvey(User user) throws IOException, MandrillApiError {
         MessageInfo info = new MessageInfo()
-                .setEmail(participant.getEmail())
-                .setName(participant.getName());
+                .setEmail(user.getEmail())
+                .setName(user.getName());
         sender.send("survey", info);
-        repository.save(participant.setSurveySendDate(LocalDateTime.now()));
+        repository.save(user.getParticipant().setSurveySendDate(LocalDateTime.now()));
     }
 }

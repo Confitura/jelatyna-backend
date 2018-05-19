@@ -3,7 +3,7 @@ package pl.confitura.jelatyna.registration;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import pl.confitura.jelatyna.BaseIntegrationTest;
-import pl.confitura.jelatyna.registration.ticket.TicketService;
+import pl.confitura.jelatyna.registration.voucher.VoucherService;
 
 import static org.junit.jupiter.api.Assertions.fail;
 
@@ -16,7 +16,7 @@ class RegistrationControllerTest extends BaseIntegrationTest {
     ParticipantRepository participantRepository;
 
     @Autowired
-    TicketService ticketService;
+    VoucherService voucherService;
 
     @Test
     void user_is_able_to_create_participant(){
@@ -25,12 +25,13 @@ class RegistrationControllerTest extends BaseIntegrationTest {
         //then participant is registered
 
         //and participant is assigned to user
+        fail("NOT IMPLEMENTED YET");
 
     }
 
     @Test
     void shouldNotAcceptInvalidToken(){
-        fail("shouldNotAcceptInvalidToken");
+        fail("NOT IMPLEMENTED YET");
     }
 
     // User is able to create Participant
