@@ -41,4 +41,8 @@ public class SecurityHelper {
     public static void asAdmin() {
         SecurityContextHolder.getContext().setAuthentication(ADMIN_TOKEN);
     }
+
+    public static void cleanSecurity() {
+        SecurityContextHolder.clearContext();
+    }
 }

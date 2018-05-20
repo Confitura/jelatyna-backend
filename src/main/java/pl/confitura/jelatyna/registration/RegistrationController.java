@@ -1,31 +1,33 @@
 package pl.confitura.jelatyna.registration;
 
-import java.io.IOException;
-import java.time.LocalDateTime;
-
+import com.google.common.collect.Streams;
+import com.microtripit.mandrillapp.lutung.model.MandrillApiError;
+import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.rest.webmvc.RepositoryRestController;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Async;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-
-import com.google.common.collect.Streams;
-import com.microtripit.mandrillapp.lutung.model.MandrillApiError;
-import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import pl.confitura.jelatyna.infrastructure.security.JelatynaPrincipal;
+import pl.confitura.jelatyna.infrastructure.security.Security;
 import pl.confitura.jelatyna.mail.MailSender;
 import pl.confitura.jelatyna.mail.MessageInfo;
 import pl.confitura.jelatyna.registration.voucher.Voucher;
 import pl.confitura.jelatyna.registration.voucher.VoucherService;
 import pl.confitura.jelatyna.user.User;
 import pl.confitura.jelatyna.user.UserRepository;
+
+import java.io.IOException;
+import java.time.LocalDateTime;
 
 @RepositoryRestController
 @Slf4j
@@ -63,18 +65,38 @@ public class RegistrationController {
         return ResponseEntity.accepted().build();
     }
 
-    @PostMapping("/participants/{id}")
+    @PostMapping("/participants")
     @Transactional
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<Object> save(@RequestBody Participant participant) {
+        JelatynaPrincipal principal = Security.getPrincipal();
+        User user = userRepository.findById(principal.id);
+        if (user.getParticipant() != null) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).build();
+        }
+        if (participant.getVoucher() != null) {
+            if (!voucherService.isValid(participant.getVoucher())) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+            }
+        }
+        Participant saved = repository.save(participant.setId(null));
+
+        user.setParticipant(saved);
+
+        return ResponseEntity.ok().build();
+    }
+
+
+    @PutMapping("/participants/{id}")
+    @Transactional
+    @PreAuthorize("@security.userRegisteredAsParticipant(#id)")
     public ResponseEntity<Object> save(@RequestBody Participant participant, @PathVariable String id) {
-        repository.findById(id)
-                .setName(participant.getName())
-                .setCity(participant.getCity())
-                .setEmail(participant.getEmail())
-                .setExperience(participant.getExperience())
-                .setGender(participant.getGender())
-                .setRole(participant.getRole())
-                .setSize(participant.getSize())
-                .setRegistrationDate(LocalDateTime.now());
+        if (voucherService.canAssign(id, participant.getVoucher())) {
+            repository.findById(id)
+                    .setVoucher(participant.getVoucher());
+        } else {
+            return ResponseEntity.status(HttpStatus.CONFLICT).build();
+        }
         return ResponseEntity.ok().build();
     }
 

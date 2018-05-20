@@ -14,6 +14,9 @@ import pl.confitura.jelatyna.registration.voucher.Voucher;
 @Entity
 @Data
 @Accessors(chain = true)
+@Table(uniqueConstraints = {
+        @UniqueConstraint(name = "unique_voucher", columnNames = {"voucher_id"})
+})
 public class Participant {
     @Id
     @GeneratedValue(generator = "uuid2")
