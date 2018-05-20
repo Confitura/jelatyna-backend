@@ -80,9 +80,7 @@ public class RegistrationController {
             }
         }
         Participant saved = repository.save(participant.setId(null));
-
         user.setParticipant(saved);
-
         return ResponseEntity.ok().build();
     }
 

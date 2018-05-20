@@ -66,7 +66,6 @@ class RegistrationControllerTest extends BaseIntegrationTest {
         assertThat(byId.getParticipant()).isNotNull();
     }
 
-
     @Test
     void should_not_create_if_user_already_is_participant() throws Exception {
         //when user tries to register as participant
@@ -80,10 +79,7 @@ class RegistrationControllerTest extends BaseIntegrationTest {
                         .content("{}")
                         .contentType(HAL_JSON))
                 .andExpect(status().isConflict());
-
-
     }
-
 
     @Test
     void user_is_able_to_create_participant_with_voucher() throws Exception {
@@ -101,14 +97,12 @@ class RegistrationControllerTest extends BaseIntegrationTest {
                         .contentType(HAL_JSON))
                 .andExpect(status().is2xxSuccessful());
 
-
         //then participant is registered and assigned to user
         User byId = userRepository.findById(user.getId());
         assertThat(byId.getParticipant()).isNotNull();
         assertThat(byId.getParticipant().getVoucher().getId())
                 .isEqualTo(voucher.getId());
     }
-
 
     @Test
     void shouldNotAcceptInvalidToken() throws Exception {
@@ -122,12 +116,10 @@ class RegistrationControllerTest extends BaseIntegrationTest {
                         .contentType(HAL_JSON))
                 .andExpect(status().is4xxClientError());
 
-
         //then participant is not registered
         User byId = userRepository.findById(user.getId());
         assertThat(byId.getParticipant()).isNull();
     }
-
 
     @Test
     void user_is_able_to_assign_token_to_participant() throws Exception {
@@ -138,8 +130,8 @@ class RegistrationControllerTest extends BaseIntegrationTest {
 
         Voucher voucher = voucherService.generateVoucher("", "");
         SecurityHelper.cleanSecurity();
-        //when user assigns token
 
+        //when user assigns token
         mockMvc.perform(
                 put("/participants/" + participant.getId())
                         .with(SecurityHelper.user(user))
@@ -148,8 +140,8 @@ class RegistrationControllerTest extends BaseIntegrationTest {
                                 "}")
                         .contentType(HAL_JSON))
                 .andExpect(status().is2xxSuccessful());
-        //then token is assigned to participant
 
+        //then token is assigned to participant
         Participant found = participantRepository.findById(participant.getId());
         assertThat(found.getVoucher()).isNotNull();
         assertThat(found.getVoucher().getId()).isEqualTo(voucher.getId());
@@ -161,11 +153,10 @@ class RegistrationControllerTest extends BaseIntegrationTest {
         SecurityHelper.asAdmin();
         Participant participant = participantRepository.save(new Participant());
         User otherUser = userRepository.save(new User().setParticipant(participant));
-
         Voucher voucher = voucherService.generateVoucher("", "");
         SecurityHelper.cleanSecurity();
-        //when user assigns token
 
+        //when user assigns token
         mockMvc.perform(
                 put("/participants/" + participant.getId())
                         .with(SecurityHelper.user(user))
@@ -182,7 +173,6 @@ class RegistrationControllerTest extends BaseIntegrationTest {
 
     @Test
     void user_is_cannot_assign_token_already_used() throws Exception {
-
         //given different user with participant
         SecurityHelper.asAdmin();
         Voucher voucher = voucherService.generateVoucher("", "");
@@ -192,8 +182,8 @@ class RegistrationControllerTest extends BaseIntegrationTest {
         Participant participant = participantRepository.save(new Participant());
         userRepository.save(user.setParticipant(participant));
         SecurityHelper.cleanSecurity();
-        //when user assigns token
 
+        //when user assigns token
         mockMvc.perform(
                 put("/participants/" + participant.getId())
                         .with(SecurityHelper.user(user))
@@ -202,8 +192,8 @@ class RegistrationControllerTest extends BaseIntegrationTest {
                                 "}")
                         .contentType(HAL_JSON))
                 .andExpect(status().isConflict());
-        //then token is assigned to participant
 
+        //then token is assigned to participant
         Participant found = participantRepository.findById(participant.getId());
         assertThat(found.getVoucher()).isNull();
     }
