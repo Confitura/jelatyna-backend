@@ -41,6 +41,7 @@ public class Security {
     public static JelatynaPrincipal getPrincipal() {
         return (JelatynaPrincipal) Optional.ofNullable(SecurityContextHolder.getContext().getAuthentication())
                 .map(Authentication::getPrincipal)
+                .filter(it -> it instanceof JelatynaPrincipal)
                 .orElse(new JelatynaPrincipal());
     }
 
