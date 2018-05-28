@@ -19,7 +19,7 @@ import pl.confitura.jelatyna.registration.voucher.Voucher;
 @Table(uniqueConstraints = {
         @UniqueConstraint(name = "unique_voucher", columnNames = {"voucher_id"})
 })
-public class ParticipapationData extends AuditedEntity {
+public class ParticipationData extends AuditedEntity {
     @Id
     @GeneratedValue(generator = "uuid2")
     @GenericGenerator(name = "uuid2", strategy = "uuid2")

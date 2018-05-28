@@ -18,7 +18,7 @@ import pl.confitura.jelatyna.agenda.AgendaEntry;
 import pl.confitura.jelatyna.agenda.TimeSlot;
 import pl.confitura.jelatyna.infrastructure.db.AuditedEntity;
 import pl.confitura.jelatyna.presentation.Presentation;
-import pl.confitura.jelatyna.registration.ParticipapationData;
+import pl.confitura.jelatyna.registration.ParticipationData;
 
 @Entity
 @Data
@@ -54,7 +54,7 @@ public class User extends AuditedEntity {
     private Set<AgendaEntry> personalAgenda = new LinkedHashSet<>();
 
     @OneToOne
-    private ParticipapationData participapationData;
+    private ParticipationData participationData;
 
     public void addToPersonalAgenda(AgendaEntry agendaEntry) {
         personalAgenda.add(agendaEntry);

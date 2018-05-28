@@ -2,7 +2,7 @@ package pl.confitura.jelatyna.registration.voucher;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import pl.confitura.jelatyna.registration.ParticipapationData;
+import pl.confitura.jelatyna.registration.ParticipationData;
 import pl.confitura.jelatyna.registration.ParticipationRepository;
 
 import java.util.List;
@@ -40,7 +40,7 @@ public class VoucherService {
         if(voucher == null){
             return true;
         }
-        ParticipapationData owner = participationRepository.findByVoucher(voucher);
+        ParticipationData owner = participationRepository.findByVoucher(voucher);
         return owner == null || owner.getId().equals(participationDataId);
     }
 }

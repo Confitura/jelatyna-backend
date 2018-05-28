@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import pl.confitura.jelatyna.BaseIntegrationTest;
 import pl.confitura.jelatyna.infrastructure.security.SecurityHelper;
-import pl.confitura.jelatyna.registration.ParticipapationData;
+import pl.confitura.jelatyna.registration.ParticipationData;
 import pl.confitura.jelatyna.registration.ParticipationRepository;
 
 import java.util.List;
@@ -98,6 +98,6 @@ class VoucherServiceTest extends BaseIntegrationTest {
     ParticipationRepository participationRepository;
 
     private void createUserWithVoucher(Voucher voucher) {
-        participationRepository.save(new ParticipapationData().setVoucher(voucher));
+        participationRepository.save(new ParticipationData().setVoucher(voucher));
     }
 }
