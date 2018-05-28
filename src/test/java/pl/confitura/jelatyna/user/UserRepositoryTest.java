@@ -83,7 +83,7 @@ public class UserRepositoryTest {
     @Test
     void should_send_ticket_to_user_that_is_registered_and_have_not_received_ticket_yet() {
         // given user registered as participapationData with proper voucher
-        Voucher voucher = voucherService.generateVoucher("", "");
+        Voucher voucher = voucherService.generateVoucher("");
         ParticipapationData participapationData = participationRepository.save(new ParticipapationData().setVoucher(voucher));
         User user = repository.save(new User().setParticipapationData(participapationData));
 
@@ -99,7 +99,7 @@ public class UserRepositoryTest {
     void should_not_send_ticket_to_user_that_have_registered_when_ticket_was_already_sent() {
 
         // given user registered as participapationData with proper voucher
-        Voucher voucher = voucherService.generateVoucher("", "");
+        Voucher voucher = voucherService.generateVoucher("");
         //and user have received ticket
         ParticipapationData participapationData = participationRepository.save(new ParticipapationData().setVoucher(voucher).setTicketSendDate(now()));
         User user = repository.save(new User().setParticipapationData(participapationData));
@@ -143,10 +143,9 @@ public class UserRepositoryTest {
 
     @Test
     void admin_should_get_users_that_already_registered(){
-        ParticipapationData registered = participationRepository.save(new ParticipapationData().setRegistrationDate(now()));
+        ParticipapationData registered = participationRepository.save(new ParticipapationData());
         User registeredUser = repository.save(new User().setParticipapationData(registered));
-        ParticipapationData notRegistered = participationRepository.save(new ParticipapationData());
-        User notRegisteredUser = repository.save(new User().setParticipapationData(notRegistered));
+        User notRegisteredUser = repository.save(new User());
 
         //when
         List<User> allRegistered = repository.findAllRegistered();

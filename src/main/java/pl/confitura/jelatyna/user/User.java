@@ -16,15 +16,16 @@ import lombok.ToString;
 import lombok.experimental.Accessors;
 import pl.confitura.jelatyna.agenda.AgendaEntry;
 import pl.confitura.jelatyna.agenda.TimeSlot;
+import pl.confitura.jelatyna.infrastructure.db.AuditedEntity;
 import pl.confitura.jelatyna.presentation.Presentation;
 import pl.confitura.jelatyna.registration.ParticipapationData;
 
 @Entity
 @Data
 @ToString(exclude = "presentations")
-@EqualsAndHashCode(exclude = "presentations")
+@EqualsAndHashCode(exclude = "presentations", callSuper = false)
 @Accessors(chain = true)
-public class User {
+public class User extends AuditedEntity {
     @Id
     @GeneratedValue(generator = "uuid2")
     @GenericGenerator(name = "uuid2", strategy = "uuid2")

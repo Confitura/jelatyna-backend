@@ -84,7 +84,7 @@ class RegistrationControllerTest extends BaseIntegrationTest {
     @Test
     void user_is_able_to_create_participation_data_with_voucher() throws Exception {
         SecurityHelper.asAdmin();
-        Voucher voucher = voucherService.generateVoucher("buyer", "test");
+        Voucher voucher = voucherService.generateVoucher("buyer");
         SecurityHelper.cleanSecurity();
         //when user tries to register as participapationData
         mockMvc.perform(
@@ -128,7 +128,7 @@ class RegistrationControllerTest extends BaseIntegrationTest {
         ParticipapationData participapationData = participationRepository.save(new ParticipapationData());
         userRepository.save(user.setParticipapationData(participapationData));
 
-        Voucher voucher = voucherService.generateVoucher("", "");
+        Voucher voucher = voucherService.generateVoucher("");
         SecurityHelper.cleanSecurity();
 
         //when user assigns token
@@ -153,7 +153,7 @@ class RegistrationControllerTest extends BaseIntegrationTest {
         SecurityHelper.asAdmin();
         ParticipapationData participapationData = participationRepository.save(new ParticipapationData());
         User otherUser = userRepository.save(new User().setParticipapationData(participapationData));
-        Voucher voucher = voucherService.generateVoucher("", "");
+        Voucher voucher = voucherService.generateVoucher("");
         SecurityHelper.cleanSecurity();
 
         //when user assigns token
@@ -175,7 +175,7 @@ class RegistrationControllerTest extends BaseIntegrationTest {
     void user_is_cannot_assign_token_already_used() throws Exception {
         //given different user with participapationData
         SecurityHelper.asAdmin();
-        Voucher voucher = voucherService.generateVoucher("", "");
+        Voucher voucher = voucherService.generateVoucher("");
         ParticipapationData otherParticipation = participationRepository.save(new ParticipapationData().setVoucher(voucher));
         User otherUser = userRepository.save(new User().setParticipapationData(otherParticipation));
 

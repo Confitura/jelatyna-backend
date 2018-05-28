@@ -34,7 +34,7 @@ class VoucherServiceTest extends BaseIntegrationTest {
     @Test
     void shouldGenerateVoucherAndStoreIt() {
         //when admin generates voucher
-        Voucher voucher = voucherService.generateVoucher(mail, creatorName);
+        Voucher voucher = voucherService.generateVoucher(mail);
 
         //then voucher is stored in db
         assertThat(voucher).isNotNull();
@@ -46,7 +46,7 @@ class VoucherServiceTest extends BaseIntegrationTest {
     @Test
     void generatedVoucherShouldBeValid() {
         //when admin generates voucher
-        Voucher voucher = voucherService.generateVoucher(mail, creatorName);
+        Voucher voucher = voucherService.generateVoucher(mail);
 
         //then voucher should be recognized as valid
         assertThat(voucherService.isValid(voucher)).isTrue();
@@ -79,9 +79,9 @@ class VoucherServiceTest extends BaseIntegrationTest {
     @Test
     void shouldFindUnusedTokens() {
         // given there is unused token
-        Voucher unused = voucherService.generateVoucher(mail, creatorName);
+        Voucher unused = voucherService.generateVoucher(mail);
         // and used token
-        Voucher used = voucherService.generateVoucher(mail, creatorName);
+        Voucher used = voucherService.generateVoucher(mail);
         createUserWithVoucher(used);
 
         // when finding unused tokens

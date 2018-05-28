@@ -16,11 +16,8 @@ public class VoucherService {
     private final VoucherRepository voucherRepository;
     private final ParticipationRepository participationRepository;
 
-    public Voucher generateVoucher(String originalBuyer, String createdBy) {
-        return voucherRepository.save(new Voucher()
-                .setCreationDate(now()))
-                .setOriginalBuyer(originalBuyer)
-                .setCreatedBy(createdBy);
+    public Voucher generateVoucher(String originalBuyer) {
+        return voucherRepository.save(new Voucher().setOriginalBuyer(originalBuyer));
     }
 
     public boolean isValid(Voucher voucher) {
