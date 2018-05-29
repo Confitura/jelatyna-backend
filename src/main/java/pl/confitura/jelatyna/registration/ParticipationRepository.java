@@ -28,6 +28,7 @@ public interface ParticipationRepository extends Repository<ParticipationData, S
     @RestResource(exported = false)
     Long count();
 
+
     @Query("SELECT count(p.id) FROM ParticipationData p WHERE registrationDate IS NOT NULL")
     @RestResource(exported = false)
     Long countRegistered();
@@ -38,4 +39,5 @@ public interface ParticipationRepository extends Repository<ParticipationData, S
 
     @RestResource(exported = false)
     ParticipationData findByVoucher(Voucher voucher);
+
 }
