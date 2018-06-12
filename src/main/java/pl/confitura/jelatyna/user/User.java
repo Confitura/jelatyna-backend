@@ -61,8 +61,7 @@ public class User extends AuditedEntity {
 
     public boolean isSpeaker() {
         return presentations != null
-                && !presentations.isEmpty()
-                && presentations.stream().anyMatch(presentation -> "accepted".equals(presentation.getStatus()));
+                && !presentations.isEmpty();
     }
 
     public void addToPersonalAgenda(AgendaEntry agendaEntry) {
