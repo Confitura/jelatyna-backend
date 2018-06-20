@@ -3,6 +3,7 @@ package pl.confitura.jelatyna.dashboard;
 import com.querydsl.core.Tuple;
 import com.querydsl.jpa.impl.JPAQuery;
 import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,9 +15,13 @@ import pl.confitura.jelatyna.registration.voucher.QVoucher;
 import pl.confitura.jelatyna.user.QUser;
 
 import javax.persistence.EntityManager;
+import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.reducing;
@@ -124,5 +129,46 @@ class DashboardController {
             };
         }
         return new Object[0];
+    }
+
+
+    @GetMapping("arrivals")
+    Object arrivals() {
+        JPAQuery<?> query = new JPAQuery<Void>(entityManager);
+        QParticipationData participationData = QParticipationData.participationData;
+
+        List<LocalDateTime> fetch = query.select(participationData.arrivalDate)
+                .from(participationData)
+                .where(participationData.arrivalDate.isNotNull())
+                .orderBy(participationData.arrivalDate.asc())
+                .fetch();
+
+        AtomicInteger atomicInteger = new AtomicInteger();
+        List<Object[]> data = fetch.stream()
+                .map(it -> new Object[]{it.toString(), atomicInteger.incrementAndGet()})
+                .collect(toList());
+
+        data.add(0, new Object[]{"date", "total"});
+        return data;
+    }
+
+    @GetMapping("registrations")
+    Object registrations() {
+        JPAQuery<?> query = new JPAQuery<Void>(entityManager);
+        QParticipationData participationData = QParticipationData.participationData;
+
+        List<Instant> fetch = query.select(participationData.createdDate)
+                .from(participationData)
+                .where(participationData.voucher.isNotNull())
+                .orderBy(participationData.arrivalDate.asc())
+                .fetch();
+
+        AtomicInteger atomicInteger = new AtomicInteger();
+        List<Object[]> data = fetch.stream()
+                .map(it -> new Object[]{it.toString(), atomicInteger.incrementAndGet()})
+                .collect(toList());
+
+        data.add(0, new Object[]{"date", "total"});
+        return data;
     }
 }
