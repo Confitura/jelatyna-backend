@@ -103,6 +103,10 @@ public class User extends AuditedEntity {
         return presentations.stream().anyMatch(Presentation::isAccepted);
     }
 
+    public boolean hasArrived() {
+        return !isParticipant() || getParticipationData().getArrivalDate() == null;
+    }
+
 //    @ManyToMany(mappedBy = "cospeakers")
 //    @JsonIgnore
 //    private Set<Presentation> cospeaking;
