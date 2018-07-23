@@ -48,7 +48,7 @@ public class UserController {
     @PostMapping("/users")
     @PreAuthorize("@security.isOwner(#user.id)")
     public ResponseEntity<?> save(@RequestBody User user) {
-        User current = updateUser(user);
+        var current = updateUser(user);
         setDefaultPhotoFor(current);
         setIdIfManuallyCreated(current);
         return ResponseEntity.ok(new Resource<>(repository.save(current)));
@@ -57,7 +57,7 @@ public class UserController {
     @GetMapping("/users/{id}")
     @PreAuthorize("@security.isOwner(#id) || @security.isAdmin()")
     public ResponseEntity<?> getById(@PathVariable String id) {
-        User user = repository.findById(id);
+        var user = repository.findById(id);
         return ResponseEntity.ok(new Resource<>(user));
     }
 

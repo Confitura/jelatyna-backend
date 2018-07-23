@@ -1,5 +1,7 @@
 package pl.confitura.jelatyna.login.github;
 
+import java.io.IOException;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.scribejava.apis.GitHubApi;
 import com.github.scribejava.core.builder.ServiceBuilder;
@@ -7,8 +9,6 @@ import com.github.scribejava.core.oauth.OAuth20Service;
 import pl.confitura.jelatyna.login.AbstractOAuth20Service;
 import pl.confitura.jelatyna.login.OAuthConfiguration;
 import pl.confitura.jelatyna.login.OAuthUserService;
-
-import java.io.IOException;
 
 public class GithubService extends AbstractOAuth20Service {
     public static final String SYSTEM = "github";

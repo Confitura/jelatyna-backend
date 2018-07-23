@@ -37,14 +37,14 @@ class PresentationStats {
     }
 
     public int getRateOfPositive() {
-        double positive = positiveVotes;
-        double total = totalVotes;
+        var positive = positiveVotes;
+        var total = totalVotes;
         return (int) (positive / total * 100);
     }
 
     public int getRateOfNegative() {
-        double negative = negativeVotes;
-        double total = totalVotes;
+        var negative = negativeVotes;
+        var total = totalVotes;
         return (int) (negative / total * 100);
     }
 }

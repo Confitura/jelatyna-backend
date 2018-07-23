@@ -1,31 +1,30 @@
 package pl.confitura.jelatyna.infrastructure.fakedb;
 
-import lombok.extern.slf4j.Slf4j;
+import static pl.confitura.jelatyna.infrastructure.Profiles.FAKE_DB;
+
+import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.annotation.PostConstruct;
+
 import org.h2.tools.Server;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
+
+import lombok.extern.slf4j.Slf4j;
 import pl.confitura.jelatyna.login.facebook.FacebookService;
 import pl.confitura.jelatyna.login.github.GithubService;
 import pl.confitura.jelatyna.login.google.GoogleService;
 import pl.confitura.jelatyna.user.User;
 import pl.confitura.jelatyna.user.UserRepository;
 
-import javax.annotation.PostConstruct;
-import java.sql.SQLException;
-import java.util.HashMap;
-import java.util.Map;
-
-import static pl.confitura.jelatyna.infrastructure.Profiles.FAKE_DB;
-
 @Slf4j
 @Configuration
 @Profile(FAKE_DB)
 public class FakeDbConfig {
-    private static String FAKE_ADMIN_ID = "AAAAAAAAAAAAAAAAAAAAAA==";
-    private static String FAKE_VOLUNTEER_ID = "BBBBBBBBBBBBBBBBBBBBBB==";
-    private static String FAKE_SPEAKER_ID = "CCCCCCCCCCCCCCCCCCCCCC==";
 
     private static final User FAKE_ADMIN = createFakeAdmin();
     private static User FAKE_VOLUNTEER = createFakeVolunteer();
@@ -75,6 +74,7 @@ public class FakeDbConfig {
 
     private static User createFakeAdmin() {
 
+        String FAKE_ADMIN_ID = "AAAAAAAAAAAAAAAAAAAAAA==";
         return new User()
                 .setId(FAKE_ADMIN_ID)
                 .setOrigin(GoogleService.SYSTEM)
@@ -86,6 +86,7 @@ public class FakeDbConfig {
     }
 
     private static User createFakeVolunteer() {
+        String FAKE_VOLUNTEER_ID = "BBBBBBBBBBBBBBBBBBBBBB==";
         return new User()
                 .setId(FAKE_VOLUNTEER_ID)
                 .setOrigin(FacebookService.SYSTEM)
@@ -97,6 +98,7 @@ public class FakeDbConfig {
     }
 
     private static User createFakeSpeaker() {
+        String FAKE_SPEAKER_ID = "CCCCCCCCCCCCCCCCCCCCCC==";
         return new User()
                 .setId(FAKE_SPEAKER_ID)
                 .setOrigin(GithubService.SYSTEM)

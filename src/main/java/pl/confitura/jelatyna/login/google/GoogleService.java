@@ -1,5 +1,7 @@
 package pl.confitura.jelatyna.login.google;
 
+import java.io.IOException;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.scribejava.apis.GoogleApi20;
 import com.github.scribejava.core.builder.ServiceBuilder;
@@ -7,8 +9,6 @@ import com.github.scribejava.core.oauth.OAuth20Service;
 import pl.confitura.jelatyna.login.AbstractOAuth20Service;
 import pl.confitura.jelatyna.login.OAuthConfiguration;
 import pl.confitura.jelatyna.login.OAuthUserService;
-
-import java.io.IOException;
 
 /**
  * @author tj

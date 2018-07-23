@@ -1,19 +1,22 @@
 package pl.confitura.jelatyna.presentation.rating;
 
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.experimental.Accessors;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.ManyToOne;
+
 import org.hibernate.annotations.GenericGenerator;
+
+import lombok.Data;
+import lombok.experimental.Accessors;
 import pl.confitura.jelatyna.presentation.Presentation;
 import pl.confitura.jelatyna.user.User;
-
-import javax.persistence.*;
 
 
 @Entity
 @Data
 @Accessors(chain = true)
-@NoArgsConstructor
 public class UsersPerformedRate {
     @Id
     @GeneratedValue(generator = "uuid2")

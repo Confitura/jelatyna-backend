@@ -1,6 +1,5 @@
 package pl.confitura.jelatyna.infrastructure.security;
 
-import static java.util.Collections.emptyList;
 import static pl.confitura.jelatyna.infrastructure.Profiles.FAKE_SECURITY;
 
 import java.io.IOException;
