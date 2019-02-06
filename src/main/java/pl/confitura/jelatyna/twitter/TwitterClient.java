@@ -29,6 +29,10 @@ public class TwitterClient {
     private Tweet mapTweet(Status status) {
         Tweet tweet = new Tweet();
         tweet.setText(status.getText());
+        tweet.setName(status.getUser().getName());
+        tweet.setTwitterHandle(status.getUser().getScreenName());
+        tweet.setAvatar(status.getUser().get400x400ProfileImageURLHttps());
+        tweet.setTime(status.getCreatedAt().toInstant());
         return tweet;
     }
 }
