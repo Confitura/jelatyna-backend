@@ -18,7 +18,7 @@ public class TwitterClient {
 
     List<Tweet> getTweets() {
         try {
-            ResponseList<Status> timelines = twitter.getUserTimeline();
+            ResponseList<Status> timelines = twitter.getUserTimeline("confiturapl");
             return timelines.stream().map(this::mapTweet).collect(Collectors.toList());
         } catch (TwitterException e) {
             log.warn("Couldn't load tweets", e);
