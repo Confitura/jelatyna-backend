@@ -1,16 +1,16 @@
 package pl.confitura.jelatyna.agenda;
 
-import lombok.AllArgsConstructor;
+import static java.time.LocalDateTime.now;
+
 import org.springframework.stereotype.Component;
-import pl.confitura.jelatyna.infrastructure.security.SecurityHelper;
+
+import lombok.AllArgsConstructor;
 import pl.confitura.jelatyna.registration.ParticipationData;
 import pl.confitura.jelatyna.registration.ParticipationRepository;
 import pl.confitura.jelatyna.registration.voucher.Voucher;
 import pl.confitura.jelatyna.registration.voucher.VoucherService;
 import pl.confitura.jelatyna.user.User;
 import pl.confitura.jelatyna.user.UserRepository;
-
-import static java.time.LocalDateTime.now;
 
 @Component
 @AllArgsConstructor

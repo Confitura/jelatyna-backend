@@ -1,31 +1,27 @@
 package pl.confitura.jelatyna.dashboard;
 
-import com.querydsl.core.Tuple;
-import com.querydsl.jpa.impl.JPAQuery;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.RequiredArgsConstructor;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-import pl.confitura.jelatyna.registration.ParticipationData;
-import pl.confitura.jelatyna.registration.QParticipationData;
-import pl.confitura.jelatyna.registration.voucher.QVoucher;
-import pl.confitura.jelatyna.user.QUser;
+import static java.util.stream.Collectors.*;
 
-import javax.persistence.EntityManager;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.Collectors;
 
-import static java.util.stream.Collectors.groupingBy;
-import static java.util.stream.Collectors.reducing;
-import static java.util.stream.Collectors.toList;
+import javax.persistence.EntityManager;
+
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.querydsl.core.Tuple;
+import com.querydsl.jpa.impl.JPAQuery;
+import lombok.RequiredArgsConstructor;
+import pl.confitura.jelatyna.registration.QParticipationData;
+import pl.confitura.jelatyna.registration.voucher.QVoucher;
+import pl.confitura.jelatyna.user.QUser;
 
 @RequiredArgsConstructor
 @RestController

@@ -1,10 +1,20 @@
 package pl.confitura.jelatyna.presentation.rating;
 
-import org.junit.jupiter.api.*;
+import static org.hamcrest.Matchers.hasSize;
+import static org.springframework.hateoas.MediaTypes.HAL_JSON;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static pl.confitura.jelatyna.infrastructure.security.SecurityHelper.user;
+
+import java.util.List;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.transaction.annotation.Transactional;
+
 import pl.confitura.jelatyna.BaseIntegrationTest;
 import pl.confitura.jelatyna.agenda.AgendaEntry;
 import pl.confitura.jelatyna.agenda.AgendaUtils;
@@ -13,16 +23,6 @@ import pl.confitura.jelatyna.agenda.UserUtils;
 import pl.confitura.jelatyna.infrastructure.security.SecurityHelper;
 import pl.confitura.jelatyna.presentation.Presentation;
 import pl.confitura.jelatyna.user.User;
-
-import java.util.List;
-
-import static org.hamcrest.Matchers.hasSize;
-import static org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS;
-import static org.springframework.hateoas.MediaTypes.HAL_JSON;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static pl.confitura.jelatyna.infrastructure.security.SecurityHelper.user;
 
 class RatingApiTest extends BaseIntegrationTest {
 

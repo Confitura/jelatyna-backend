@@ -1,15 +1,16 @@
 package pl.confitura.jelatyna.agenda;
 
-import lombok.AllArgsConstructor;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import pl.confitura.jelatyna.presentation.Presentation;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
+
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import lombok.AllArgsConstructor;
+import pl.confitura.jelatyna.presentation.Presentation;
 
 @Service
 @AllArgsConstructor
@@ -34,9 +35,9 @@ public class AgendaUtils {
         Iterable<AgendaEntry> iterableAgenda = agendaRepository.findAll();
         return StreamSupport
                 .stream(iterableAgenda.spliterator(), false)
-                .peek(it->it.getPresentation().getTitle())
-                .peek(it->it.getPresentation().getTags().size())
-                .peek(it->it.getPresentation().getCospeakers().size())
+                .peek(it -> it.getPresentation().getTitle())
+                .peek(it -> it.getPresentation().getTags().size())
+                .peek(it -> it.getPresentation().getCospeakers().size())
                 .distinct()
                 .collect(Collectors.toList());
 

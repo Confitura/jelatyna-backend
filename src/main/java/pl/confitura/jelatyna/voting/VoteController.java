@@ -2,24 +2,39 @@ package pl.confitura.jelatyna.voting;
 
 import static java.util.stream.Collectors.toList;
 
-import com.google.common.collect.Lists;
-
 import java.time.LocalDateTime;
-import java.util.*;
-import java.util.stream.*;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+import java.util.stream.StreamSupport;
+
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.rest.webmvc.RepositoryRestController;
-import org.springframework.hateoas.*;
+import org.springframework.hateoas.Resource;
+import org.springframework.hateoas.Resources;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 import org.springframework.web.bind.WebDataBinder;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.InitBinder;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.google.common.collect.Lists;
 import pl.confitura.jelatyna.infrastructure.WebUtils;
-import pl.confitura.jelatyna.presentation.*;
+import pl.confitura.jelatyna.presentation.PresentationRepository;
 
 @RepositoryRestController
 public class VoteController {
@@ -46,7 +61,7 @@ public class VoteController {
     @RequestMapping(value = "/votes/start/{token}", method = RequestMethod.POST)
     @Transactional
     public ResponseEntity<Resources<?>> start(@PathVariable String token) {
-        Set<Vote> votes = voteRepository.findAllForToken(token);
+        var votes = voteRepository.findAllForToken(token);
         if (votes.isEmpty()) {
             votes = generateVotes(token);
         }
@@ -54,9 +69,9 @@ public class VoteController {
     }
 
     private Set<Vote> generateVotes(@PathVariable String token) {
-        List<Presentation> presentations = Lists.newArrayList(this.presentationRepository.findAllForV4p());
+        var presentations = Lists.newArrayList(this.presentationRepository.findAllForV4p());
         Collections.shuffle(presentations);
-        List<Vote> votes = IntStream.range(0, presentations.size())
+        var votes = IntStream.range(0, presentations.size())
                 .mapToObj(idx -> new Vote()
                         .setClient(webUtils.getClientIp())
                         .setToken(token)
@@ -69,7 +84,7 @@ public class VoteController {
     @PostMapping("/votes")
     @Transactional
     public ResponseEntity<Resource<Vote>> save(@RequestBody @Valid Vote vote) {
-        Vote loaded = voteRepository.findById(vote.getId());
+        var loaded = voteRepository.findById(vote.getId());
         loaded.setRate(vote.getRate());
         loaded.setVoteDate(LocalDateTime.now());
         return ResponseEntity.ok(new Resource<>(loaded));
@@ -81,10 +96,10 @@ public class VoteController {
     @ResponseBody
     @Transactional
     public List<PresentationStats> statistics() {
-        Iterable<Vote> allVotes = voteRepository.findAll();
-        Stream<Vote> votesStream = StreamSupport.stream(allVotes.spliterator(), true);
+        var allVotes = voteRepository.findAll();
+        var votesStream = StreamSupport.stream(allVotes.spliterator(), true);
 
-        Map<String, Optional<PresentationStats>> statsByPresentation = votesStream
+        var statsByPresentation = votesStream
                 .map(PresentationStats::new)
                 .collect(Collectors.groupingBy(PresentationStats::getPresentationId,
                         Collectors.reducing(PresentationStats::add)));

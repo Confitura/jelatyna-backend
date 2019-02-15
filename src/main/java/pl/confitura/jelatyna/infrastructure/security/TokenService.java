@@ -4,12 +4,12 @@ import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.Base64;
 import java.util.Date;
-import java.util.HashMap;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import com.google.common.collect.ImmutableMap;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.JwtHandlerAdapter;
@@ -27,12 +27,13 @@ public class TokenService {
     public String asToken(User user) {
         log.info("Transforming user to token {}", user);
         return Jwts.builder()
-                .setClaims(new HashMap<String, Object>() {{
-                    put("isAdmin", user.isAdmin());
-                    put("isVolunteer", user.isVolunteer());
-                    put("isSpeaker", user.isSpeaker());
-                    put("isNew", StringUtils.isEmpty(user.getEmail()));
-                }})
+                .setClaims(ImmutableMap.<String, Object>builder()
+                        .put("isAdmin", user.isAdmin())
+                        .put("isVolunteer", user.isVolunteer())
+                        .put("isSpeaker", user.isSpeaker())
+                        .put("isNew", StringUtils.isEmpty(user.getEmail()))
+                        .build()
+                )
                 .setId(user.getId())
                 .setSubject(user.getName())
                 .setExpiration(Date.from(LocalDateTime.now().plusHours(10).toInstant(ZoneOffset.UTC)))
@@ -40,7 +41,7 @@ public class TokenService {
     }
 
     public JelatynaPrincipal toUser(String token) {
-        return Jwts.parser().setSigningKey(getKey()).parse(token, new JwtHandlerAdapter<JelatynaPrincipal>() {
+        return Jwts.parser().setSigningKey(getKey()).parse(token, new JwtHandlerAdapter<>() {
 
             @Override
             public JelatynaPrincipal onClaimsJws(Jws<Claims> jws) {
@@ -49,8 +50,7 @@ public class TokenService {
                         .setName(body.getSubject())
                         .setId(body.getId())
                         .setAdmin((Boolean) body.get("isAdmin"))
-                        .setVolunteer((Boolean) body.get("isVolunteer"))
-                        ;
+                        .setVolunteer((Boolean) body.get("isVolunteer"));
             }
         });
     }
