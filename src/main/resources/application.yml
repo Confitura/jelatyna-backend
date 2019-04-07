@@ -24,3 +24,4 @@ management.endpoints.web.base-path: /api/actuator
 management.endpoints.web.exposure.include: "*"
 
 #management.endpoint.we
+conference.c4p.enabled: true
