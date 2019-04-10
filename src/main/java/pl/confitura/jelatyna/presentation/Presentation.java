@@ -53,6 +53,8 @@ public class Presentation {
 
     private String status;
 
+    private boolean workshop = false;
+
     boolean isOwnedBy(String email) {
         return speakers.stream().anyMatch(it -> it.getEmail().equalsIgnoreCase(email));
     }
