@@ -26,7 +26,7 @@ public class ParticipationData extends AuditedEntity {
     @Column(columnDefinition = "varchar(100)")
     private String id;
 
-    @OneToOne
+    @OneToOne(optional = false)
     private Voucher voucher;
 
     private String city;

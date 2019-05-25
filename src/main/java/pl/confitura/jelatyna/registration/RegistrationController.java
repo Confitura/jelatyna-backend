@@ -83,36 +83,33 @@ public class RegistrationController {
 
     @PostMapping("/participants")
     @Transactional
-    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<Object> save(@RequestBody RegistrationForm registrationForm) {
         JelatynaPrincipal principal = SecurityContextUtil.getPrincipal();
-        User user = userRepository.findById(principal.id);
-        if (user.getParticipationData() != null) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).build();
-        }
-        if (registrationForm.getVoucher() != null) {
-            if (!voucherService.isValid(registrationForm.getVoucher())) {
+        Voucher voucher = registrationForm.getVoucher();
+        if (voucher != null) {
+            if (!voucherService.isValid(voucher)) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("INVALID_VOUCHER");
+            } else if (voucherService.isUsed(voucher)) {
+                return ResponseEntity.status(HttpStatus.CONFLICT).body("VOUCHER_USED");
             }
+        } else {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("MISSING_VOUCHER");
         }
-        saveParticipation(registrationForm, user);
-        saveDemographic(registrationForm);
+        saveParticipation(registrationForm);
+        saveStatistics(registrationForm);
         return ResponseEntity.ok().build();
     }
 
-    private void saveDemographic(RegistrationForm registrationForm) {
+    private void saveStatistics(RegistrationForm registrationForm) {
         demographicDataRepository.save(registrationForm.createDemographicData());
     }
 
-    private void saveParticipation(RegistrationForm registrationForm, User user) {
-        ParticipationData saved = repository.save(registrationForm.createParticipant());
-        user.setParticipationData(saved);
-        userRepository.save(user);
+    private void saveParticipation(RegistrationForm registrationForm) {
+        repository.save(registrationForm.createParticipant());
     }
 
     @PutMapping("/participants/{id}")
     @Transactional
-    @PreAuthorize("@security.isUserAnOwnerOfParticipationData(#id)")
     public ResponseEntity<Object> save(@RequestBody ParticipationData participationData, @PathVariable String id) {
         if (participationData.getVoucher() != null) {
             if (!voucherService.isValid(participationData.getVoucher())) {

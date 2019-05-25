@@ -72,4 +72,8 @@ public class VoucherService {
             return canAssign(participationDataId, voucher);
         }
     }
+
+    public boolean isUsed(Voucher voucher) {
+        return participationRepository.findByVoucher(voucher) != null;
+    }
 }
