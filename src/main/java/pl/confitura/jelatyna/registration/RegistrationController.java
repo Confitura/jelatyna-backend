@@ -41,17 +41,15 @@ import pl.confitura.jelatyna.user.UserRepository;
 public class RegistrationController {
 
     private MailSender sender;
-    private UserRepository userRepository;
     private ParticipationRepository repository;
     private VoucherService voucherService;
     private TicketGenerator generator;
     private DemographicDataRepository demographicDataRepository;
-    private PresentationRepository presentationRepository;
 
     @GetMapping("/participants")
     @PreAuthorize("@security.isAdmin()")
     ResponseEntity<Iterable<Participant>> getParticipants(@AuthenticationPrincipal Authentication authentication) {
-        List<Participant> list = userRepository.findParticipants().stream()
+        List<Participant> list = repository.findAll().stream()
                 .map(it -> new Participant(it, (JelatynaPrincipal) authentication.getPrincipal()))
                 .collect(toList());
         return ResponseEntity.ok(list);
@@ -69,7 +67,7 @@ public class RegistrationController {
     @PreAuthorize("@security.isAdmin()")
     @Transactional
     public ResponseEntity<Object> sendTickets() {
-        doSendTicketTo(userRepository.findUsersToSendTickets());
+        doSendTicketTo(repository.findUsersToSendTickets());
         return ResponseEntity.accepted().build();
     }
 
@@ -77,7 +75,7 @@ public class RegistrationController {
     @PreAuthorize("@security.isAdmin()")
     @Transactional
     public ResponseEntity<Object> sendSurveys() {
-        doSendSurveyTo(userRepository.findAllPresentOnConference());
+        doSendSurveyTo(repository.findAllPresentOnConference());
         return ResponseEntity.accepted().build();
     }
 
@@ -128,19 +126,18 @@ public class RegistrationController {
     @PostMapping("/participants/{id}/arrived")
     @PreAuthorize("@security.isVolunteer()")
     @Transactional
-    public ResponseEntity<Object> arrived(@PathVariable String id, @AuthenticationPrincipal Authentication authentication) {
-        User user = userRepository.findById(id);
+    public ResponseEntity<Object> arrived(
+            @PathVariable String id,
+            @AuthenticationPrincipal Authentication authentication) {
+        ParticipationData user = repository.findById(id);
         if (user == null) {
             return ResponseEntity.notFound().build();
-        } else if (!user.isParticipant()) {
-            return ResponseEntity.badRequest().body("USER NOT REGISTERED");
         } else {
             return arrived(user, (JelatynaPrincipal) authentication.getPrincipal());
         }
     }
 
-    private ResponseEntity<Object> arrived(User user, JelatynaPrincipal registerer) {
-        ParticipationData participationData = user.getParticipationData();
+    private ResponseEntity<Object> arrived(ParticipationData participationData, JelatynaPrincipal registerer) {
         HttpStatus status = HttpStatus.OK;
         if (participationData.alreadyArrived()) {
             status = HttpStatus.CONFLICT;
@@ -149,12 +146,7 @@ public class RegistrationController {
                     .setArrivalDate(LocalDateTime.now())
                     .setRegisteredBy(registerer.getId());
         }
-        Participant participant = new Participant(user, registerer);
-        if (!user.isSpeaker() || !user.hasAcceptedPresentation()) {
-            boolean isSpeaker = !presentationRepository.findAcceptedWithCoSpeaker(user).isEmpty();
-            participant.setSpeaker(isSpeaker);
-            participant.setHasAcceptedPresentation(isSpeaker);
-        }
+        Participant participant = new Participant(participationData, registerer);
         return ResponseEntity.status(status).body(participant);
     }
 
@@ -174,11 +166,11 @@ public class RegistrationController {
     }
 
     @Async
-    void doSendTicketTo(Iterable<User> users) {
+    void doSendTicketTo(Iterable<ParticipationData> users) {
         users.forEach(this::sendTicketTo);
     }
 
-    private void sendTicketTo(User user) {
+    private void sendTicketTo(ParticipationData user) {
         try {
             doSendTicketTo(user);
         } catch (Exception e) {
@@ -188,24 +180,24 @@ public class RegistrationController {
     }
 
     @Transactional
-    void doSendTicketTo(User user) throws IOException, MandrillApiError {
+    void doSendTicketTo(ParticipationData user) throws IOException, MandrillApiError {
         MessageInfo info = new MessageInfo()
                 .setEmail(user.getEmail())
-                .setName(user.getName())
+                .setName(user.getFullName())
                 .setTicket(generator.generateFor(user.getId()));
         sender.send("registration-ticket", info);
-        repository.save(user.getParticipationData().setTicketSendDate(LocalDateTime.now()));
+        repository.save(user.setTicketSendDate(LocalDateTime.now()));
     }
 
     @Async
-    void doSendSurveyTo(Iterable<User> users) {
+    void doSendSurveyTo(Iterable<ParticipationData> users) {
         StreamSupport.stream(users.spliterator(), false)
-                .filter(it -> it.getParticipationData().alreadyArrived())
-                .filter(it -> it.getParticipationData().surveyNotSentYet())
+                .filter(it -> it.alreadyArrived())
+                .filter(it -> it.surveyNotSentYet())
                 .forEach(this::sendSurveyTo);
     }
 
-    private void sendSurveyTo(User user) {
+    private void sendSurveyTo(ParticipationData user) {
         try {
             doSendSurvey(user);
         } catch (Exception e) {
@@ -215,11 +207,11 @@ public class RegistrationController {
     }
 
     @Transactional
-    void doSendSurvey(User user) throws IOException, MandrillApiError {
+    void doSendSurvey(ParticipationData user) throws IOException, MandrillApiError {
         MessageInfo info = new MessageInfo()
                 .setEmail(user.getEmail())
-                .setName(user.getName());
+                .setName(user.getFullName());
         sender.send("survey", info);
-        repository.save(user.getParticipationData().setSurveySendDate(LocalDateTime.now()));
+        repository.save(user.setSurveySendDate(LocalDateTime.now()));
     }
 }

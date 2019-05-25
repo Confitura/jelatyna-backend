@@ -60,20 +60,13 @@ public class VoucherService {
         voucherRepository.save(voucher);
     }
 
-    public boolean canUseVoucher(String voucherId) {
-        JelatynaPrincipal principal = SecurityContextUtil.getPrincipal();
-        User user = userRepository.findById(principal.id);
-        Voucher voucher = voucherRepository.findById(voucherId);
-
-        if (user == null || user.getParticipationData() == null) {
-            return canAssign(null, voucher);
-        } else {
-            String participationDataId = user.getParticipationData().getId();
-            return canAssign(participationDataId, voucher);
-        }
-    }
-
     public boolean isUsed(Voucher voucher) {
         return participationRepository.findByVoucher(voucher) != null;
+    }
+
+    public boolean canUseVoucher(String voucherId) {
+        Voucher v = voucherRepository.findById(voucherId);
+        return participationRepository.findByVoucher(v) != null;
+
     }
 }

@@ -107,7 +107,6 @@ class RegistrationControllerTest extends BaseIntegrationTest {
         //given user with participationData
         SecurityHelper.asAdmin();
         ParticipationData participationData = participationRepository.save(new ParticipationData().setVoucher(validVoucher));
-        userRepository.save(user.setParticipationData(participationData));
 
         Voucher voucher = voucherService.generateVoucher("");
         SecurityHelper.cleanSecurity();
@@ -131,10 +130,8 @@ class RegistrationControllerTest extends BaseIntegrationTest {
         SecurityHelper.asAdmin();
         Voucher voucher = voucherService.generateVoucher("");
         ParticipationData otherParticipation = participationRepository.save(new ParticipationData().setVoucher(voucher));
-        User otherUser = userRepository.save(new User().setParticipationData(otherParticipation));
 
         ParticipationData participationData = participationRepository.save(new ParticipationData().setVoucher(validVoucher));
-        userRepository.save(user.setParticipationData(participationData));
         SecurityHelper.cleanSecurity();
 
         //when user assigns token
