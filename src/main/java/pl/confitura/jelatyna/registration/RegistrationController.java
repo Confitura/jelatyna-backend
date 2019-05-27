@@ -9,6 +9,7 @@ import java.util.stream.StreamSupport;
 
 import org.springframework.data.rest.webmvc.RepositoryRestController;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -28,12 +29,11 @@ import pl.confitura.jelatyna.infrastructure.security.JelatynaPrincipal;
 import pl.confitura.jelatyna.infrastructure.security.SecurityContextUtil;
 import pl.confitura.jelatyna.mail.MailSender;
 import pl.confitura.jelatyna.mail.MessageInfo;
-import pl.confitura.jelatyna.presentation.PresentationRepository;
 import pl.confitura.jelatyna.registration.demographic.DemographicDataRepository;
 import pl.confitura.jelatyna.registration.voucher.Voucher;
 import pl.confitura.jelatyna.registration.voucher.VoucherService;
-import pl.confitura.jelatyna.user.User;
-import pl.confitura.jelatyna.user.UserRepository;
+
+import javax.servlet.http.HttpServletResponse;
 
 @RepositoryRestController
 @Slf4j
@@ -93,17 +93,36 @@ public class RegistrationController {
         } else {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("MISSING_VOUCHER");
         }
-        saveParticipation(registrationForm);
+        ParticipationData participation = saveParticipation(registrationForm);
         saveStatistics(registrationForm);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok(participation);
     }
 
     private void saveStatistics(RegistrationForm registrationForm) {
         demographicDataRepository.save(registrationForm.createDemographicData());
     }
 
-    private void saveParticipation(RegistrationForm registrationForm) {
-        repository.save(registrationForm.createParticipant());
+    private ParticipationData saveParticipation(RegistrationForm registrationForm) {
+        return repository.save(registrationForm.createParticipant());
+    }
+
+    @GetMapping("/participants/{id}")
+    @Transactional
+    public ResponseEntity<Object> findOne(@PathVariable String id) {
+        ParticipationData data = repository.findById(id);
+        if (data == null) {
+            return ResponseEntity.notFound().build();
+        } else {
+            return ResponseEntity.ok(data);
+        }
+    }
+
+    @GetMapping("/participants/{id}/ticket")
+    @Transactional
+    public void getQrCode(@PathVariable String id, HttpServletResponse response) throws IOException {
+        byte[] ticket = generator.generateFor(id);
+        response.setContentType(MediaType.IMAGE_PNG.toString());
+        response.getOutputStream().write(ticket);
     }
 
     @PutMapping("/participants/{id}")
@@ -192,8 +211,8 @@ public class RegistrationController {
     @Async
     void doSendSurveyTo(Iterable<ParticipationData> users) {
         StreamSupport.stream(users.spliterator(), false)
-                .filter(it -> it.alreadyArrived())
-                .filter(it -> it.surveyNotSentYet())
+                .filter(ParticipationData::alreadyArrived)
+                .filter(ParticipationData::surveyNotSentYet)
                 .forEach(this::sendSurveyTo);
     }
 

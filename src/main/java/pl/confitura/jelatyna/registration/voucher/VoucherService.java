@@ -31,7 +31,7 @@ public class VoucherService {
         }
     }
 
-    public boolean isValid(String voucherId) {
+    boolean isValid(String voucherId) {
         Voucher voucher = voucherRepository.findById(voucherId);
         if (voucher == null || voucher.getId() == null) {
             return false;
@@ -66,7 +66,6 @@ public class VoucherService {
 
     public boolean canUseVoucher(String voucherId) {
         Voucher v = voucherRepository.findById(voucherId);
-        return participationRepository.findByVoucher(v) != null;
-
+        return participationRepository.findByVoucher(v) == null;
     }
 }
