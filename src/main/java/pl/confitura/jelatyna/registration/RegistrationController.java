@@ -82,7 +82,6 @@ public class RegistrationController {
     @PostMapping("/participants")
     @Transactional
     public ResponseEntity<Object> save(@RequestBody RegistrationForm registrationForm) {
-        JelatynaPrincipal principal = SecurityContextUtil.getPrincipal();
         Voucher voucher = registrationForm.getVoucher();
         if (voucher != null) {
             if (!voucherService.isValid(voucher)) {
