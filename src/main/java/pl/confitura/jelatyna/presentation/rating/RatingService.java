@@ -29,10 +29,7 @@ public class RatingService {
 
         Presentation presentation = repository.findById(presentationId);
         User user = userRepository.findById(userId);
-//        if (!user.hasArrived()) {
-//            throw new UserRatingPresentationHaveNotArrived();
-//        }
-
+        rate.setVoterArrived(user.hasArrived());
         markUserRated(presentation, user);
         rate = saveRate(rate, presentation);
         return rate;
