@@ -6,7 +6,6 @@ import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 import org.springframework.data.rest.core.annotation.RestResource;
 import org.springframework.security.core.parameters.P;
 import org.springframework.security.access.prepost.PreAuthorize;
-import pl.confitura.jelatyna.user.User;
 
 import java.util.List;
 
@@ -41,5 +40,5 @@ public interface PresentationRepository extends Repository<Presentation, String>
 
     @Query("FROM Presentation p JOIN p.speakers co WHERE p.status ='accepted' and co = ?1")
     @RestResource(exported = false)
-    List<Presentation> findAcceptedWithCoSpeaker(User user);
+    List<Presentation> findAcceptedWithCoSpeaker(Speaker user);
 }

@@ -6,7 +6,6 @@ import java.time.LocalDateTime;
 import lombok.Data;
 import pl.confitura.jelatyna.infrastructure.security.JelatynaPrincipal;
 import pl.confitura.jelatyna.registration.voucher.Voucher;
-import pl.confitura.jelatyna.user.User;
 
 @Data
 class Participant implements Serializable {

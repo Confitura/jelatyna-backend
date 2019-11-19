@@ -13,8 +13,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import pl.confitura.jelatyna.agenda.AgendaEntry;
 import pl.confitura.jelatyna.agenda.AgendaRepository;
 import pl.confitura.jelatyna.agenda.InlineAgenda;
-import pl.confitura.jelatyna.user.User;
-import pl.confitura.jelatyna.user.UserRepository;
+import pl.confitura.jelatyna.user.dto.User;
+import pl.confitura.jelatyna.user.UserFacade;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,7 +31,7 @@ public class PersonalAgendaController {
 
     private final AgendaRepository agendaRepository;
     private final ProjectionFactory projectionFactory;
-    private final UserRepository userRepository;
+    private final UserFacade userFacade;
 
     @PostMapping("/users/{userId}/personalAgenda")
     public ResponseEntity<?> addEntry(@RequestBody AddAgendaEntryRequest entryRequest, @PathVariable User userId) {
@@ -42,26 +42,26 @@ public class PersonalAgendaController {
     }
 
     private void addNewEntry(User user, AgendaEntry agendaEntry) {
-        user.addToPersonalAgenda(agendaEntry);
-        userRepository.save(user);
+//        user.addToPersonalAgenda(agendaEntry);
+//        userRepository.save(user);
     }
 
     private void removeCurrentEntryWithSameTimeSlot(User user, AgendaEntry agendaEntry) {
-        if (user.personalAgendaContainsTimeSlot(agendaEntry.getTimeSlot())) {
-            user.getFromPersonalAgendaWithTimeSlot(agendaEntry.getTimeSlot())
-                    .ifPresent(user::removeFromPersonalAgenda);
-        }
+//        if (user.personalAgendaContainsTimeSlot(agendaEntry.getTimeSlot())) {
+//            user.getFromPersonalAgendaWithTimeSlot(agendaEntry.getTimeSlot())
+//                    .ifPresent(user::removeFromPersonalAgenda);
+//        }
     }
 
     @GetMapping("/users/{userId}/personalAgenda")
     public ResponseEntity<?> getAgenda(@PathVariable User userId) {
-        List<AgendaEntry> allRoomsTimeSlotEntries = agendaRepository.findEntriesForAllRooms();
-        Set<AgendaEntry> personalAgenda = userId.getPersonalAgenda();
-        Stream<AgendaEntry> fullAgenda = concat(allRoomsTimeSlotEntries, personalAgenda);
-        List<InlineAgenda> agendaWithInlinedResources = fullAgenda
-                .map(it -> projectionFactory.createProjection(InlineAgenda.class, it))
-                .collect(toList());
-        return ResponseEntity.ok(new Resources<>(agendaWithInlinedResources));
+//        List<AgendaEntry> allRoomsTimeSlotEntries = agendaRepository.findEntriesForAllRooms();
+//        Set<AgendaEntry> personalAgenda = userId.getPersonalAgenda();
+//        Stream<AgendaEntry> fullAgenda = concat(allRoomsTimeSlotEntries, personalAgenda);
+//        List<InlineAgenda> agendaWithInlinedResources = fullAgenda
+//                .map(it -> projectionFactory.createProjection(InlineAgenda.class, it))
+//                .collect(toList());
+        return ResponseEntity.ok(new Resources<>(null));
     }
 
     private Stream<AgendaEntry> concat(List<AgendaEntry> allRoomsTimeSlotEntries, Set<AgendaEntry> personalAgenda) {

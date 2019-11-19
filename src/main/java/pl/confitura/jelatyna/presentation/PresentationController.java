@@ -21,15 +21,14 @@ import org.springframework.web.bind.annotation.RequestBody;
 import lombok.AllArgsConstructor;
 import pl.confitura.jelatyna.presentation.rating.Rate;
 import pl.confitura.jelatyna.presentation.rating.RatingService;
-import pl.confitura.jelatyna.user.User;
-import pl.confitura.jelatyna.user.UserRepository;
+import pl.confitura.jelatyna.user.UserFacade;
 
 @RepositoryRestController
 @AllArgsConstructor
 public class PresentationController {
 
     private PresentationRepository repository;
-    private UserRepository userRepository;
+    private UserFacade userFacade;
     private RatingService ratingService;
 
     @PreAuthorize("@security.isAdmin()")
@@ -51,8 +50,8 @@ public class PresentationController {
 
     @PreAuthorize("@security.presentationOwnedByUser(#presentationId) || @security.isAdmin()")
     @GetMapping("/presentations/{presentationId}/cospeakers")
-    public ResponseEntity<Resources<User>> getCospeakers(@PathVariable String presentationId) {
-        Set<User> cospeakers = this.repository.findById(presentationId).getSpeakers();
+    public ResponseEntity<Resources<Speaker>> getCospeakers(@PathVariable String presentationId) {
+        Set<Speaker> cospeakers = this.repository.findById(presentationId).getSpeakers();
         return ResponseEntity.ok(new Resources<>(cospeakers));
     }
 
@@ -72,27 +71,24 @@ public class PresentationController {
     @PostMapping("/presentations/{presentationId}/cospeakers/{email:.+}")
     @Transactional
     public ResponseEntity<?> addCospeaker(@PathVariable String presentationId, @PathVariable String email) {
-        User user = this.userRepository.findByEmail(email);
+       /* User user = this.userRepository.findByEmail(email);
         if (user == null) {
             return ResponseEntity.notFound().build();
         }
 
         Presentation presentation = this.repository.findById(presentationId);
         if (presentation.isOwnedBy(email)) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body("You cannot add yourself as a speaker!");
-        }
-        if (presentation.hasCospeaker(email)) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body("This speaker is already added to this presentation");
         }
-        presentation.getSpeakers().add(user);
-        return ResponseEntity.ok(user);
+        presentation.getSpeakers().add(user);*/
+        return ResponseEntity.ok(null);
     }
 
-    private Set<User> removeCospeakerByEmail(String email, Set<User> cospeakers) {
+    private Set<Speaker> removeCospeakerByEmail(String email, Set<Speaker> cospeakers) {
         return cospeakers.stream().filter(it -> !it.getEmail().equalsIgnoreCase(email)).collect(Collectors.toSet());
     }
 
-    private Set<User> removeCospeakerById(String id, Set<User> cospeakers) {
+    private Set<Speaker> removeCospeakerById(String id, Set<Speaker> cospeakers) {
         return cospeakers.stream().filter(it -> !it.getId().equalsIgnoreCase(id)).collect(Collectors.toSet());
     }
 

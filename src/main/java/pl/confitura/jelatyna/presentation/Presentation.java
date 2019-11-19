@@ -24,8 +24,7 @@ import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.experimental.Accessors;
 import pl.confitura.jelatyna.presentation.rating.Rate;
-import pl.confitura.jelatyna.user.PublicUser;
-import pl.confitura.jelatyna.user.User;
+import pl.confitura.jelatyna.user.dto.PublicUser;
 
 @Entity
 @Data
@@ -59,7 +58,7 @@ public class Presentation {
 
     @ManyToMany
     @NotNull
-    private Set<User> speakers = new HashSet<>();
+    private Set<Speaker> speakers = new HashSet<>();
 
     @OneToMany(fetch = FetchType.LAZY)
     private Set<Rate> ratings = new HashSet<>();
@@ -68,12 +67,12 @@ public class Presentation {
 
     private boolean workshop = false;
 
-    boolean isOwnedBy(String email) {
+    public boolean isOwnedBy(String email) {
         return speakers.stream().anyMatch(it -> it.getEmail().equalsIgnoreCase(email));
     }
 
-    boolean hasCospeaker(String email) {
-        return speakers.stream().anyMatch(it -> it.getEmail().equalsIgnoreCase(email));
+    public boolean ownerHasId(String id) {
+        return speakers.stream().anyMatch(it -> it.getId().equals(id));
     }
 
     public boolean isAccepted() {
@@ -92,7 +91,7 @@ public class Presentation {
         return id == null;
     }
 
-    public Presentation setSpeaker(User speaker) {
+    public Presentation setSpeaker(Speaker speaker) {
         speakers.add(speaker);
         return this;
     }
@@ -103,7 +102,7 @@ public class Presentation {
             return Collections.emptySet();
         } else {
             return getSpeakers().stream()
-                    .map(PublicUser::new)
+                    .map(it -> it.toPublicUser())
                     .collect(toSet());
         }
     }

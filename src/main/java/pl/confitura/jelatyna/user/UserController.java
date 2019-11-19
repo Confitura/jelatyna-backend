@@ -31,10 +31,11 @@ import pl.confitura.jelatyna.presentation.Presentation;
 import pl.confitura.jelatyna.presentation.PresentationRepository;
 import pl.confitura.jelatyna.registration.ParticipationData;
 import pl.confitura.jelatyna.registration.ParticipationRepository;
+import pl.confitura.jelatyna.user.dto.PublicUser;
 
 @RequiredArgsConstructor
 @RepositoryRestController
-public class UserController {
+class UserController {
 
     private final UserRepository repository;
     private final PresentationRepository presentationRepository;
@@ -72,18 +73,18 @@ public class UserController {
     @GetMapping("/users/{id}/public")
     public ResponseEntity<?> getPublicById(@PathVariable String id) {
         User user = repository.findById(id);
-        return ResponseEntity.ok(new Resource<>(new PublicUser(user)));
+        return ResponseEntity.ok(new Resource<>(user.toPublicUser()));
     }
 
     @GetMapping("/users/search/admins")
     public ResponseEntity<?> getAdmins() {
-        Set<PublicUser> admins = repository.findAdmins().stream().map(PublicUser::new).collect(toSet());
+        Set<PublicUser> admins = repository.findAdmins().stream().map(User::toPublicUser).collect(toSet());
         return ResponseEntity.ok(new Resources<>(admins));
     }
 
     @GetMapping("/users/search/volunteers")
     public ResponseEntity<?> getVolunteers() {
-        Set<PublicUser> volunteers = repository.findVolunteers().stream().map(PublicUser::new).collect(toSet());
+        Set<PublicUser> volunteers = repository.findVolunteers().stream().map(User::toPublicUser).collect(toSet());
         return ResponseEntity.ok(new Resources<>(volunteers));
     }
 
@@ -96,7 +97,8 @@ public class UserController {
         user.setVolunteer(isVolunteer);
         return ResponseEntity.ok().build();
     }
-
+/*
+TODO - move to presentation controller
     @PostMapping("/users/{userId}/presentations")
     @PreAuthorize("@security.isOwner(#userId)")
     public ResponseEntity<?> addPresentationToUser(@Valid @RequestBody Presentation presentation,
@@ -110,11 +112,12 @@ public class UserController {
         Presentation saved = presentationRepository.save(presentation);
         return ResponseEntity.ok(new Resource<>(saved));
     }
+*/
 
     @GetMapping("/users/search/speakers")
     public ResponseEntity<?> getSpeakers() {
         Set<Resource<?>> speakers = repository.findAllAccepted().stream()
-                .map(PublicUser::new)
+                .map(User::toPublicUser)
                 .map(speaker -> new Resource<>(speaker))
                 .collect(toSet());
         return ResponseEntity.ok(new Resources<>(speakers));

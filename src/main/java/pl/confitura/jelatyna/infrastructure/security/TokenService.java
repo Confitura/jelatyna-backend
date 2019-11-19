@@ -16,7 +16,7 @@ import io.jsonwebtoken.JwtHandlerAdapter;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import lombok.extern.slf4j.Slf4j;
-import pl.confitura.jelatyna.user.User;
+import pl.confitura.jelatyna.user.dto.User;
 
 @Service
 @Slf4j
@@ -30,7 +30,7 @@ public class TokenService {
                 .setClaims(new HashMap<String, Object>() {{
                     put("isAdmin", user.isAdmin());
                     put("isVolunteer", user.isVolunteer());
-                    put("isSpeaker", user.isSpeaker());
+//                    put("isSpeaker", user.isSpeaker());
                     put("isNew", StringUtils.isEmpty(user.getEmail()));
                 }})
                 .setId(user.getId())
