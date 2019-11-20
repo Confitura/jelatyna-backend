@@ -19,7 +19,7 @@ public class RatingService {
     private PresentationRepository repository;
     private RateRepository rateRepository;
     private UsersPerformedRateRepository usersPerformedRateRepository;
-//    private UserFacade userFacade;
+    private UserFacade userFacade;
     private Security security;
 
     @Transactional
@@ -28,12 +28,8 @@ public class RatingService {
         verifyPresentationNotRatedByUser(presentationId, userId);
 
         Presentation presentation = repository.findById(presentationId);
-//        User user = userFacade.findById(userId);
-//        if (!user.hasArrived()) {
-//            throw new UserRatingPresentationHaveNotArrived();
-//        }
-
-//        markUserRated(presentation, user);
+        User user = userFacade.findById(userId);
+        markUserRated(presentation, user);
         rate = saveRate(rate, presentation);
         return rate;
     }

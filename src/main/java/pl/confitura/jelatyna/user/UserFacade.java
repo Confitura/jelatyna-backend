@@ -34,4 +34,9 @@ public class UserFacade {
     public void update(pl.confitura.jelatyna.user.dto.User user) {
         userRepository.save(User.fromDto(user));
     }
+
+    public pl.confitura.jelatyna.user.dto.User findByEmail(String email) {
+        User user = userRepository.findByEmail(email);
+        return user == null ? null : user.toDto();
+    }
 }
